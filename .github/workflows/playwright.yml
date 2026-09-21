@@ -27,49 +27,28 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Create .env file
+        run: |
+          printf '%s\n' '${{ secrets.TEST_ENV }}' > .env
+
+      - name: Verify environment setup
+        run: |
+          test -f .env
+          grep -q "^USER1_EMAIL=" .env
+          grep -q "^USER2_EMAIL=" .env
+          grep -q "^USER1_PASSWORD=" .env
+          grep -q "^USER2_PASSWORD=" .env
+          echo "Required environment variables are present"
+
       - name: Run Playwright tests
         run: npx playwright test
-        env:
-          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-
-          USER1_EMAIL: ${{ secrets.USER1_EMAIL }}
-          USER1_PASSWORD: ${{ secrets.USER1_PASSWORD }}
-
-          USER2_EMAIL: ${{ secrets.USER2_EMAIL }}
-          USER2_PASSWORD: ${{ secrets.USER2_PASSWORD }}
-
-          INVALID_EMAIL: ${{ secrets.INVALID_EMAIL }}
-          INVALID_PASSWORD: ${{ secrets.INVALID_PASSWORD }}
-
-          USER1_HOUSE_NUMBER: ${{ secrets.USER1_HOUSE_NUMBER }}
-          USER1_STREET: ${{ secrets.USER1_STREET }}
-          USER1_CITY: ${{ secrets.USER1_CITY }}
-          USER1_STATE: ${{ secrets.USER1_STATE }}
-          USER1_POSTAL_CODE: ${{ secrets.USER1_POSTAL_CODE }}
-          USER1_COUNTRY: ${{ secrets.USER1_COUNTRY }}
-
-          USER1_CARD_NUMBER: ${{ secrets.USER1_CARD_NUMBER }}
-          USER1_CARD_HOLDER_NAME: ${{ secrets.USER1_CARD_HOLDER_NAME }}
-          USER1_CARD_CVV: ${{ secrets.USER1_CARD_CVV }}
-          USER1_CARD_EXPIRY: ${{ secrets.USER1_CARD_EXPIRY }}
-
-          USER2_HOUSE_NUMBER: ${{ secrets.USER2_HOUSE_NUMBER }}
-          USER2_STREET: ${{ secrets.USER2_STREET }}
-          USER2_CITY: ${{ secrets.USER2_CITY }}
-          USER2_STATE: ${{ secrets.USER2_STATE }}
-          USER2_POSTAL_CODE: ${{ secrets.USER2_POSTAL_CODE }}
-          USER2_COUNTRY: ${{ secrets.USER2_COUNTRY }}
-
-          USER2_CARD_NUMBER: ${{ secrets.USER2_CARD_NUMBER }}
-          USER2_CARD_HOLDER_NAME: ${{ secrets.USER2_CARD_HOLDER_NAME }}
-          USER2_CARD_CVV: ${{ secrets.USER2_CARD_CVV }}
-          USER2_CARD_EXPIRY: ${{ secrets.USER2_CARD_EXPIRY }}
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: |
+            playwright-report/
+            test-results/
           retention-days: 30
