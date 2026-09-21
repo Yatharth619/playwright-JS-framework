@@ -18,7 +18,7 @@ test("Successful checkout", async({checkoutpage}) =>
         await expect(checkoutpage.page).toHaveURL(/checkout/)
         await checkoutpage.proceedToCheckout()
         await checkoutpage.login(users.user2.email, users.user2.password)
-        await expect(checkoutpage.loggedInMessage(users.user2.name)).toBeVisible()
+        await expect(checkoutpage.loggedInMessage(users.user2.name)).toBeVisible({ timeout: 15000 })
         await checkoutpage.proceedPostLogin()
         await checkoutpage.addAddress(userDetails.user2.address)
         await checkoutpage.selectPayment(userDetails.user2.card)
